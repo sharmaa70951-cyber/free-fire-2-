@@ -224,7 +224,27 @@ function startGame() {
 
     draw();
 }
+setInterval(() => {
+    if (!playing) return;
 
+    const dx = player.x - enemy.x;
+    const dy = player.y - enemy.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 50) {
+        health -= 5;
+
+        if (health < 0) health = 0;
+
+        document.getElementById("health").textContent = health;
+
+        if (health === 0) {
+            playing = false;
+            document.getElementById("start").textContent = "RESTART";
+            document.getElementById("start").style.display = "block";
+        }
+    }
+}, 500);
 document.getElementById("start").onclick = startGame;
 </script>
 let enemy = {
