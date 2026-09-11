@@ -32,21 +32,24 @@ body {
     background: rgba(0,0,0,.6);
     padding: 10px 15px;
     border-radius: 10px;
+    z-index: 10;
 }
 
 #start {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     padding: 16px 30px;
     font-size: 22px;
     border: 0;
     border-radius: 12px;
     background: #e50914;
     color: white;
+    z-index: 20;
 }
-</style> #controls {
+
+#controls {
     position: fixed;
     bottom: 25px;
     left: 0;
@@ -55,6 +58,7 @@ body {
     justify-content: space-between;
     padding: 0 25px;
     pointer-events: none;
+    z-index: 10;
 }
 
 .joystick {
@@ -101,6 +105,7 @@ body {
     font-size: 30px;
     pointer-events: auto;
 }
+</style>
 </head>
 
 <body>
@@ -114,6 +119,7 @@ body {
 </div>
 
 <button id="start">START GAME</button>
+
 <div id="controls">
     <div class="joystick">
         <button id="up">⬆️</button>
@@ -124,37 +130,16 @@ body {
 
     <button id="shoot">🔫</button>
 </div>
+
 <script>
 const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
 const speed = 5;
 
-function movePlayer(dx, dy) {
-    if (!playing) return;
-
-    player.x += dx * speed;
-    player.y += dy * speed;
-
-    player.x = Math.max(player.size,
-        Math.min(canvas.width - player.size, player.x));
-
-    player.y = Math.max(player.size,
-        Math.min(canvas.height - player.size, player.y));
-
-    draw();
-}
-
-document.getElementById("up").onclick = () => movePlayer(0, -1);
-document.getElementById("down").onclick = () => movePlayer(0, 1);
-document.getElementById("left").onclick = () => movePlayer(-1, 0);
-document.getElementById("right").onclick = () => movePlayer(1, 0);const ctx = canvas.getContext("2d");
-
-function resize() {
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
-}
-
-resize();
-window.addEventListener("resize", resize);
+let health = 100;
+let score = 0;
+let playing = false;
 
 let player = {
     x: 0,
@@ -162,9 +147,27 @@ let player = {
     size: 25
 };
 
-let health = 100;
-let score = 0;
-let playing = false;
+let enemy = {
+    x: 100,
+    y: 100,
+    size: 25
+};
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    if (!playing) {
+        player.x = canvas.width / 2;
+        player.y = canvas.height / 2;
+    }
+
+    draw();
+}
+
+resize();
+
+window.addEventListener("resize", resize);
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -176,41 +179,100 @@ function draw() {
     // Player
     ctx.fillStyle = "#2196f3";
     ctx.beginPath();
-    ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+    ctx.arc(
+        player.x,
+        player.y,
+        player.size,
+        0,
+        Math.PI * 2
+    );
     ctx.fill();
 
     // Gun
     ctx.fillStyle = "#222";
-    ctx.fillRect(player.x + 15, player.y - 5, 30, 10);
+    ctx.fillRect(
+        player.x + 15,
+        player.y - 5,
+        30,
+        10
+    );
+
+    // Enemy
+    if (playing) {
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(
+            enemy.x,
+            enemy.y,
+            enemy.size,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+    }
 }
-setInterval(() => {
+
+function movePlayer(dx, dy) {
     if (!playing) return;
 
-    const dx = player.x - enemy.x;
-    const dy = player.y - enemy.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    player.x += dx * speed;
+    player.y += dy * speed;
 
-    if (distance > 2) {
-        enemy.x += (dx / distance) * 1.5;
-        enemy.y += (dy / distance) * 1.5;
-        draw();
-    }
+    player.x = Math.max(
+        player.size,
+        Math.min(canvas.width - player.size, player.x)
+    );
+
+    player.y = Math.max(
+        player.size,
+        Math.min(canvas.height - player.size, player.y)
+    );
+
+    draw();
+}
+
+// Movement buttons
+document.getElementById("up").onclick = () => {
+    movePlayer(0, -1);
+};
+
+document.getElementById("down").onclick = () => {
+    movePlayer(0, 1);
+};
+
+document.getElementById("left").onclick = () => {
+    movePlayer(-1, 0);
+};
+
+document.getElementById("right").onclick = () => {
+    movePlayer(1, 0);
+};
+
+// Shooting
 document.getElementById("shoot").onclick = () => {
-
     if (!playing) return;
 
     const dx = enemy.x - player.x;
     const dy = enemy.y - player.y;
+
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance < 180) {
         score += 20;
+
         document.getElementById("score").textContent = score;
 
-        enemy.x = Math.random() * (canvas.width - 60) + 30;
-        enemy.y = Math.random() * (canvas.height - 120) + 60;
+        enemy.x =
+            Math.random() * (canvas.width - 60) + 30;
+
+        enemy.y =
+            Math.random() * (canvas.height - 120) + 60;
+
+        draw();
     }
 };
+
+// Start / Restart
 function startGame() {
     player.x = canvas.width / 2;
     player.y = canvas.height / 2;
@@ -219,103 +281,73 @@ function startGame() {
     score = 0;
     playing = true;
 
+    enemy.x =
+        Math.random() * (canvas.width - 60) + 30;
+
+    enemy.y =
+        Math.random() * (canvas.height - 120) + 60;
+
     document.getElementById("health").textContent = health;
     document.getElementById("score").textContent = score;
+
     document.getElementById("start").style.display = "none";
 
     draw();
 }
+
+document.getElementById("start").onclick = startGame;
+
+// Enemy follows player
 setInterval(() => {
     if (!playing) return;
 
     const dx = player.x - enemy.x;
     const dy = player.y - enemy.y;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance > 2) {
+        enemy.x += (dx / distance) * 1.5;
+        enemy.y += (dy / distance) * 1.5;
+    }
+
+    draw();
+
+}, 50);
+
+// Enemy damage
+setInterval(() => {
+    if (!playing) return;
+
+    const dx = player.x - enemy.x;
+    const dy = player.y - enemy.y;
+
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance < 50) {
         health -= 5;
 
-        if (health < 0) health = 0;
+        if (health < 0) {
+            health = 0;
+        }
 
         document.getElementById("health").textContent = health;
 
         if (health === 0) {
             playing = false;
+
             document.getElementById("start").textContent = "RESTART";
             document.getElementById("start").style.display = "block";
+
+            draw();
         }
     }
+
 }, 500);
-document.getElementById("start").onclick = startGame;
 
-let enemy = {
-    x: 100,
-    y: 100,
-    size: 25
-};
-
-function drawEnemy() {
-    ctx.fillStyle = "red";
-    ctx.beginPath();
-    ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
-    ctx.fill();
-}
-
-const oldDraw = draw;
-
-draw = function() {
-    oldDraw();
-    if (playing) {
-        drawEnemy();
-    }
-};
-
-function movePlayer(dx, dy) {
-    if (!playing) return;
-
-    player.x += dx * speed;
-    player.y += dy * speed;
-
-    player.x = Math.max(player.size,
-        Math.min(canvas.width - player.size, player.x));
-
-    player.y = Math.max(player.size,
-        Math.min(canvas.height - player.size, player.y));
-
-    draw();
-}
-
-document.getElementById("up").onclick = () => movePlayer(0, -1);
-document.getElementById("down").onclick = () => movePlayer(0, 1);
-document.getElementById("left").onclick = () => movePlayer(-1, 0);
-document.getElementById("right").onclick = () => movePlayer(1, 0);document.getElementById("shoot").onclick = () => {
-    if (!playing) return;
-
-    const dx = enemy.x - player.x;
-    const dy = enemy.y - player.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance < 180) {
-        score += 20;
-        document.getElementById("score").textContent = score;
-
-        enemy.x = Math.random() * (canvas.width - 60) + 30;
-        enemy.y = Math.random() * (canvas.height - 120) + 60;
-
-        draw();
-    }
-};
-
+draw();
 </script>
-<style>
-#shoot {
-  pointer-events: auto;
-}
-</style>
-#shoot {
-   ...
-   pointer-events: auto;
-}
-</style></body>
-</html></body>
+
+</body>
 </html>
+
