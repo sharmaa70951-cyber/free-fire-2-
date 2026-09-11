@@ -195,7 +195,7 @@ setInterval(() => {
         enemy.y += (dy / distance) * 1.5;
         draw();
     }
-document.getElementById("shoot")
+document.getElementById("shoot").onclick = () => {
 
     if (!playing) return;
 
