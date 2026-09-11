@@ -126,7 +126,27 @@ body {
 </div>
 <script>
 const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const speed = 5;
+
+function movePlayer(dx, dy) {
+    if (!playing) return;
+
+    player.x += dx * speed;
+    player.y += dy * speed;
+
+    player.x = Math.max(player.size,
+        Math.min(canvas.width - player.size, player.x));
+
+    player.y = Math.max(player.size,
+        Math.min(canvas.height - player.size, player.y));
+
+    draw();
+}
+
+document.getElementById("up").onclick = () => movePlayer(0, -1);
+document.getElementById("down").onclick = () => movePlayer(0, 1);
+document.getElementById("left").onclick = () => movePlayer(-1, 0);
+document.getElementById("right").onclick = () => movePlayer(1, 0);const ctx = canvas.getContext("2d");
 
 function resize() {
     canvas.width = innerWidth;
