@@ -201,7 +201,27 @@ function startGame() {
 
 document.getElementById("start").onclick = startGame;
 </script>
-const speed = 5;
+let enemy = {
+    x: 100,
+    y: 100,
+    size: 25
+};
+
+function drawEnemy() {
+    ctx.fillStyle = "red";
+    ctx.beginPath();
+    ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+const oldDraw = draw;
+
+draw = function() {
+    oldDraw();
+    if (playing) {
+        drawEnemy();
+    }
+};const speed = 5;
 
 function movePlayer(dx, dy) {
     if (!playing) return;
