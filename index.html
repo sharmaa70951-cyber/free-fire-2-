@@ -255,6 +255,22 @@ function movePlayer(dx, dy) {
 document.getElementById("up").onclick = () => movePlayer(0, -1);
 document.getElementById("down").onclick = () => movePlayer(0, 1);
 document.getElementById("left").onclick = () => movePlayer(-1, 0);
-document.getElementById("right").onclick = () => movePlayer(1, 0);
+document.getElementById("right").onclick = () => movePlayer(1, 0);document.getElementById("shoot").onclick = () => {
+    if (!playing) return;
+
+    const dx = enemy.x - player.x;
+    const dy = enemy.y - player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 180) {
+        score += 20;
+        document.getElementById("score").textContent = score;
+
+        enemy.x = Math.random() * (canvas.width - 60) + 30;
+        enemy.y = Math.random() * (canvas.height - 120) + 60;
+
+        draw();
+    }
+};
 </body>
 </html>
