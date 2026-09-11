@@ -46,7 +46,61 @@ body {
     background: #e50914;
     color: white;
 }
-</style>
+</style> #controls {
+    position: fixed;
+    bottom: 25px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 25px;
+    pointer-events: none;
+}
+
+.joystick {
+    display: grid;
+    grid-template-columns: 55px 55px 55px;
+    grid-template-rows: 55px 55px;
+    gap: 5px;
+    pointer-events: auto;
+}
+
+.joystick button,
+#shoot {
+    width: 55px;
+    height: 55px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.65);
+    color: white;
+    font-size: 22px;
+}
+
+#up {
+    grid-column: 2;
+}
+
+#left {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#down {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+#right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+#shoot {
+    width: 75px;
+    height: 75px;
+    font-size: 30px;
+    pointer-events: auto;
+}
 </head>
 
 <body>
