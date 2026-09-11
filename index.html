@@ -1,75 +1,123 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My First Website</title>
-  <link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Arena</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #111;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+#game {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    background: #315b32;
+}
+
+#info {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 18px;
+    background: rgba(0,0,0,.6);
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
+#start {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    padding: 16px 30px;
+    font-size: 22px;
+    border: 0;
+    border-radius: 12px;
+    background: #e50914;
+    color: white;
+}
+</style>
 </head>
+
 <body>
 
-  <header class="navbar">
-    <div class="logo">MY<span>WEB</span></div>
-    <nav>
-      <a href="#home">Home</a>
-      <a href="#about">About</a>
-      <a href="#services">Services</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
+<canvas id="game"></canvas>
 
-  <main>
-    <section id="home" class="hero">
-      <div class="hero-content">
-        <p class="tag">WELCOME TO MY WEBSITE</p>
-        <h1>अपनी <span>पहली वेबसाइट</span> में आपका स्वागत है</h1>
-        <p class="subtitle">
-          यह एक modern, responsive और mobile-friendly वेबसाइट है।
-          इसे आप अपनी पसंद के हिसाब से बदल सकते हैं।
-        </p>
-        <a class="btn" href="#about">शुरू करें</a>
-      </div>
-    </section>
+<div id="info">
+❤️ Health: <span id="health">100</span>
+&nbsp; | &nbsp;
+🎯 Score: <span id="score">0</span>
+</div>
 
-    <section id="about" class="section">
-      <h2>मेरे बारे में</h2>
-      <p>
-        यह आपकी पहली वेबसाइट का About section है।
-        यहाँ आप अपने बारे में, अपने काम या अपने brand के बारे में लिख सकते हैं।
-      </p>
-    </section>
+<button id="start">START GAME</button>
 
-    <section id="services" class="section">
-      <h2>हम क्या करते हैं?</h2>
-      <div class="cards">
-        <div class="card">
-          <div class="icon">💻</div>
-          <h3>Web Design</h3>
-          <p>Simple और attractive वेबसाइट design.</p>
-        </div>
-        <div class="card">
-          <div class="icon">📱</div>
-          <h3>Mobile Friendly</h3>
-          <p>मोबाइल और कंप्यूटर दोनों पर responsive design.</p>
-        </div>
-        <div class="card">
-          <div class="icon">⚡</div>
-          <h3>Fast Website</h3>
-          <p>हल्की और जल्दी load होने वाली वेबसाइट.</p>
-        </div>
-      </div>
-    </section>
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-    <section id="contact" class="section contact">
-      <h2>Contact</h2>
-      <p>नीचे अपना email या social media link डाल सकते हैं।</p>
-      <a class="btn" href="mailto:youremail@example.com">Email करें</a>
-    </section>
-  </main>
+function resize() {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+}
 
-  <footer>
-    <p>© 2026 My Web. All Rights Reserved.</p>
-  </footer>
+resize();
+window.addEventListener("resize", resize);
+
+let player = {
+    x: 0,
+    y: 0,
+    size: 25
+};
+
+let health = 100;
+let score = 0;
+let playing = false;
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Ground
+    ctx.fillStyle = "#315b32";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Player
+    ctx.fillStyle = "#2196f3";
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Gun
+    ctx.fillStyle = "#222";
+    ctx.fillRect(player.x + 15, player.y - 5, 30, 10);
+}
+
+function startGame() {
+    player.x = canvas.width / 2;
+    player.y = canvas.height / 2;
+
+    health = 100;
+    score = 0;
+    playing = true;
+
+    document.getElementById("health").textContent = health;
+    document.getElementById("score").textContent = score;
+    document.getElementById("start").style.display = "none";
+
+    draw();
+}
+
+document.getElementById("start").onclick = startGame;
+</script>
 
 </body>
 </html>
