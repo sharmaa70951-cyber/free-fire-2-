@@ -183,7 +183,21 @@ function draw() {
     ctx.fillStyle = "#222";
     ctx.fillRect(player.x + 15, player.y - 5, 30, 10);
 }
+document.getElementById("shoot").onclick = () => {
+    if (!playing) return;
 
+    const dx = enemy.x - player.x;
+    const dy = enemy.y - player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 180) {
+        score += 20;
+        document.getElementById("score").textContent = score;
+
+        enemy.x = Math.random() * (canvas.width - 60) + 30;
+        enemy.y = Math.random() * (canvas.height - 120) + 60;
+    }
+};
 function startGame() {
     player.x = canvas.width / 2;
     player.y = canvas.height / 2;
