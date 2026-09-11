@@ -183,7 +183,19 @@ function draw() {
     ctx.fillStyle = "#222";
     ctx.fillRect(player.x + 15, player.y - 5, 30, 10);
 }
-document.getElementById("shoot").onclick = () => {
+setInterval(() => {
+    if (!playing) return;
+
+    const dx = player.x - enemy.x;
+    const dy = player.y - enemy.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance > 2) {
+        enemy.x += (dx / distance) * 1.5;
+        enemy.y += (dy / distance) * 1.5;
+        draw();
+    }
+}, 50);document.getElementById("shoot").onclick = () => {
     if (!playing) return;
 
     const dx = enemy.x - player.x;
